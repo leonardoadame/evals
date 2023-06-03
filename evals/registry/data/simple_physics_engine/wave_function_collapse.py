@@ -29,58 +29,38 @@ BALL = "◦"
 
 
 def get_rules():
-    rules = []
-    # Air
-    rules.append((AIR, ABOVE, AIR))
-    rules.append((AIR, BELOW, AIR))
-
-    rules.append((AIR, LEFT, AIR))
-    rules.append((AIR, RIGHT, AIR))
-
-    # Blocks
-    rules.append((BLOCK, ABOVE, BLOCK))
-    rules.append((BLOCK, RIGHT, BLOCK))
-
-    rules.append((BLOCK, LEFT, BLOCK))
-    rules.append((BLOCK, BELOW, BLOCK))
-
-    # Air and blocks
-    rules.append((BLOCK, RIGHT, AIR))
-    rules.append((AIR, LEFT, BLOCK))
-
-    rules.append((BLOCK, LEFT, AIR))
-    rules.append((AIR, RIGHT, BLOCK))
-
-    rules.append((BLOCK, BELOW, AIR))
-    rules.append((AIR, ABOVE, BLOCK))
-
-    # Air and ramps
-    rules.append((LEFT_RAMP, BELOW, AIR))
-    rules.append((AIR, ABOVE, LEFT_RAMP))
-
-    rules.append((RIGHT_RAMP, BELOW, AIR))
-    rules.append((AIR, ABOVE, RIGHT_RAMP))
-
-    rules.append((AIR, RIGHT, RIGHT_RAMP))
-    rules.append((RIGHT_RAMP, LEFT, AIR))
-
-    rules.append((AIR, LEFT, LEFT_RAMP))
-    rules.append((LEFT_RAMP, RIGHT, AIR))
-
-    # Ramps and blocks
-    rules.append((LEFT_RAMP, ABOVE, BLOCK))
-    rules.append((BLOCK, BELOW, LEFT_RAMP))
-
-    rules.append((RIGHT_RAMP, ABOVE, BLOCK))
-    rules.append((BLOCK, BELOW, RIGHT_RAMP))
-
-    rules.append((LEFT_RAMP, LEFT, BLOCK))
-    rules.append((BLOCK, RIGHT, LEFT_RAMP))
-
-    rules.append((RIGHT_RAMP, RIGHT, BLOCK))
-    rules.append((BLOCK, LEFT, RIGHT_RAMP))
-
-    return rules
+    return [
+        (AIR, ABOVE, AIR),
+        (AIR, BELOW, AIR),
+        (AIR, LEFT, AIR),
+        (AIR, RIGHT, AIR),
+        (BLOCK, ABOVE, BLOCK),
+        (BLOCK, RIGHT, BLOCK),
+        (BLOCK, LEFT, BLOCK),
+        (BLOCK, BELOW, BLOCK),
+        (BLOCK, RIGHT, AIR),
+        (AIR, LEFT, BLOCK),
+        (BLOCK, LEFT, AIR),
+        (AIR, RIGHT, BLOCK),
+        (BLOCK, BELOW, AIR),
+        (AIR, ABOVE, BLOCK),
+        (LEFT_RAMP, BELOW, AIR),
+        (AIR, ABOVE, LEFT_RAMP),
+        (RIGHT_RAMP, BELOW, AIR),
+        (AIR, ABOVE, RIGHT_RAMP),
+        (AIR, RIGHT, RIGHT_RAMP),
+        (RIGHT_RAMP, LEFT, AIR),
+        (AIR, LEFT, LEFT_RAMP),
+        (LEFT_RAMP, RIGHT, AIR),
+        (LEFT_RAMP, ABOVE, BLOCK),
+        (BLOCK, BELOW, LEFT_RAMP),
+        (RIGHT_RAMP, ABOVE, BLOCK),
+        (BLOCK, BELOW, RIGHT_RAMP),
+        (LEFT_RAMP, LEFT, BLOCK),
+        (BLOCK, RIGHT, LEFT_RAMP),
+        (RIGHT_RAMP, RIGHT, BLOCK),
+        (BLOCK, LEFT, RIGHT_RAMP),
+    ]
 
 
 def init_possibilities():
@@ -117,7 +97,7 @@ def create_wave_array(height, width):
                 wave[i][j] = [BLOCK]
 
             # Create the side walls
-            if j == 0 or j == width - 1:
+            if j in [0, width - 1]:
                 wave[i][j] = [BLOCK]
 
     return wave
@@ -127,10 +107,7 @@ def get_final_state(tile) -> str:
     """
     Returns the key of the last remaining superposition.
     """
-    if len(tile) == 1:
-        return tile[0]
-    else:
-        return "?"
+    return tile[0] if len(tile) == 1 else "?"
 
 
 def calculate_entropy(tile):
@@ -170,12 +147,8 @@ def find_lowest_entropy_tile(wave):
             elif min_entropy is None or current_entropy < min_entropy:
                 min_entropy = current_entropy
                 min_coords = (i, j)
-                possible_coords = []
-                possible_coords.append((i, j))
-
-    min_coords = random.choice(possible_coords)
-
-    return min_coords
+                possible_coords = [(i, j)]
+    return random.choice(possible_coords)
 
 
 # Helper functions for safely getting adjacent tiles.
@@ -237,17 +210,17 @@ def get_possible_neighbors_in_direction(tile, direction):
     rules = get_rules()
     possible_neighbors = []
     for option in tile:
-        for other, d, comp in rules:
-            if d == direction and comp == option:
-                possible_neighbors.append(other)
+        possible_neighbors.extend(
+            other
+            for other, d, comp in rules
+            if d == direction and comp == option
+        )
     return possible_neighbors
 
 
 def propagate(wave, coords):
-    stack = []
-    stack.append(coords)
-
-    while len(stack) > 0:
+    stack = [coords]
+    while stack:
         curr_coords = stack.pop()
         curr_x, curr_y = curr_coords
 
@@ -263,9 +236,9 @@ def propagate(wave, coords):
             possible_neighbors = get_possible_neighbors_in_direction(wave[curr_x][curr_y], vec)
 
             for other_possibility in other_possibilities:
-                if not other_possibility in possible_neighbors:
+                if other_possibility not in possible_neighbors:
                     wave[other_x][other_y].remove(other_possibility)
-                    if not other_coords in stack:
+                    if other_coords not in stack:
                         stack.append(other_coords)
 
 

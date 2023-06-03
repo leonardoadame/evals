@@ -31,8 +31,7 @@ def _index_samples(samples: List[Any]) -> List[Tuple[Any, int]]:
     if _MAX_SAMPLES is not None:
         indices = indices[:_MAX_SAMPLES]
     logger.info(f"Evaluating {len(indices)} samples")
-    work_items = [(samples[i], i) for i in indices]
-    return work_items
+    return [(samples[i], i) for i in indices]
 
 
 def set_max_samples(max_samples: int):
@@ -123,7 +122,7 @@ class Eval(abc.ABC):
             Evaluate a single sample.
             """
             sample, idx = args
-            base_name, split = self.name.split(".")[0:2]
+            base_name, split = self.name.split(".")[:2]
             sample_id = f"{base_name}.{split}.{idx}"
             with recorder.as_default_recorder(sample_id):
                 seed = f"{sample_id}:{self.seed}".encode("utf-8")
@@ -132,7 +131,7 @@ class Eval(abc.ABC):
 
         with ThreadPool(threads) as pool:
             if os.environ.get("EVALS_SEQUENTIAL", "0") in {"1", "true", "yes"}:
-                logger.info(f"Running in sequential mode!")
+                logger.info("Running in sequential mode!")
                 iter = map(eval_sample, work_items)
             else:
                 logger.info(f"Running in threaded mode with {threads} threads!")

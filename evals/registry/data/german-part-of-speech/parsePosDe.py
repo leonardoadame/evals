@@ -108,7 +108,7 @@ for page in tqdm(pages, total=total_pages):
                 allowed = None
                 if part_of_speech in pos_mapping:
                     part_of_speech = [pos_mapping[part_of_speech]]
-                elif part_of_speech == "komparativ" or part_of_speech == "superlativ":
+                elif part_of_speech in ["komparativ", "superlativ"]:
                     allowed = ["adjective", "adverb"]
                 elif part_of_speech == "deklinierte form":
                     allowed = ["noun", "adjective", "article", "pronoun"]
@@ -156,7 +156,7 @@ for page in tqdm(pages, total=total_pages):
     # Example: noun_verb_f
     pos_string = "_".join([pos + ("_i" if parts_of_speech[pos] else "")
                           for pos in sorted(parts_of_speech.keys())])
-    if pos_string == "":
+    if not pos_string:
         continue
     if pos_string not in all_words:
         all_words[pos_string] = {

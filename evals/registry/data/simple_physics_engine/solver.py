@@ -62,14 +62,10 @@ def solve_diagram(diagram):
                         j -= 1
                 elif below_shape == BLOCK:
                     j -= 1
-                elif below_shape == LEFT_RAMP or below_shape == RIGHT_RAMP:
+                elif below_shape in [LEFT_RAMP, RIGHT_RAMP]:
                     ball_direction = DOWN
 
-            elif left_shape == LEFT_RAMP:
-                ball_direction = DOWN
-            elif left_shape == RIGHT_RAMP:
-                ball_direction = DOWN
-            elif left_shape == BLOCK:
+            elif left_shape in [LEFT_RAMP, RIGHT_RAMP, BLOCK]:
                 ball_direction = DOWN
             else:
                 print("Unhandled case in LEFT")
@@ -89,14 +85,10 @@ def solve_diagram(diagram):
                         j += 1
                 elif below_shape == BLOCK:
                     j += 1
-                elif below_shape == LEFT_RAMP or below_shape == RIGHT_RAMP:
+                elif below_shape in [LEFT_RAMP, RIGHT_RAMP]:
                     ball_direction = DOWN
 
-            elif right_shape == LEFT_RAMP:
-                ball_direction = DOWN
-            elif right_shape == RIGHT_RAMP:
-                ball_direction = DOWN
-            elif right_shape == BLOCK:
+            elif right_shape in [LEFT_RAMP, RIGHT_RAMP, BLOCK]:
                 ball_direction = DOWN
             else:
                 print("Unhandled case in LEFT")

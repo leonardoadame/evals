@@ -29,9 +29,11 @@ class OpenAIChatCompletionResult(OpenAIBaseCompletionResult):
     def get_completions(self) -> list[str]:
         completions = []
         if self.raw_data and "choices" in self.raw_data:
-            for choice in self.raw_data["choices"]:
-                if "message" in choice:
-                    completions.append(choice["message"]["content"])
+            completions.extend(
+                choice["message"]["content"]
+                for choice in self.raw_data["choices"]
+                if "message" in choice
+            )
         return completions
 
 
@@ -39,9 +41,11 @@ class OpenAICompletionResult(OpenAIBaseCompletionResult):
     def get_completions(self) -> list[str]:
         completions = []
         if self.raw_data and "choices" in self.raw_data:
-            for choice in self.raw_data["choices"]:
-                if "text" in choice:
-                    completions.append(choice["text"])
+            completions.extend(
+                choice["text"]
+                for choice in self.raw_data["choices"]
+                if "text" in choice
+            )
         return completions
 
 

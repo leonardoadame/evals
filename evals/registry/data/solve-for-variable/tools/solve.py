@@ -349,8 +349,6 @@ class EquationGenerator:
 
         self.max_nodes = 9
         self.max_vars  = 3  # lowered from 4 since we use
-                            # the more expensive "fractions" module for testing
-
         expr = self._make_var()
 
         # add expression nodes
@@ -370,7 +368,7 @@ class EquationGenerator:
 
         letters = [chr(x) for x in range(ord('a'), ord('z') + 1)
                           if chr(x) not in ('i', 'j', 'l', 'o')]
-        numbers = [n for n in range(2, self.TOP_PRIME - 1)]
+        numbers = list(range(2, self.TOP_PRIME - 1))
 
         letters = random.sample(letters, self.count_vars + 1)
         numbers = random.sample(numbers, self.count_nums)
@@ -424,10 +422,9 @@ class EquationGenerator:
             for n in range(len(e.args)):
                 e.args[n] = self._replace(e.args[n],
                                           placeholder, klass, choices, i)
-        else:
-            if e is placeholder:
-                e = klass(choices[i[0]])
-                i[0] += 1
+        elif e is placeholder:
+            e = klass(choices[i[0]])
+            i[0] += 1
         return e
 
     def _term(self):

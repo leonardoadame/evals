@@ -31,9 +31,9 @@ class ModelBasedClassify(evals.Eval):
             self.completion_fns = self.completion_fns[:-1]
         n_models = len(self.completion_fns)
         self.sample_kwargs = {"max_tokens": 1024}
-        self.sample_kwargs.update(sample_kwargs or {})
+        self.sample_kwargs |= (sample_kwargs or {})
         self.eval_kwargs = {"max_tokens": 1024}
-        self.eval_kwargs.update(eval_kwargs or {})
+        self.eval_kwargs |= (eval_kwargs or {})
         self.metaeval = metaeval
         self.modelgraded_spec_args = modelgraded_spec_args or {}
         self.eval_type = eval_type
@@ -77,8 +77,6 @@ class ModelBasedClassify(evals.Eval):
                 completion, _ = get_input_completion()
             completions[v] = completion
 
-        # run modelgraded eval
-        metrics = {}
         choice, info = classify(
             mg=self.mg,
             completion_fn=self.eval_completion_fn,
@@ -87,8 +85,7 @@ class ModelBasedClassify(evals.Eval):
             n=self.multicomp_n,
             format_kwargs={**completions, **test_sample, **self.modelgraded_spec_args},
         )
-        metrics.update(dict(choice=choice, score=info["score"]))
-
+        metrics = {} | dict(choice=choice, score=info["score"])
         # run metaeval if requested
         if self.metaeval:
             assert "choice" in test_sample
@@ -111,14 +108,15 @@ class ModelBasedClassify(evals.Eval):
         # record the counts
         choices = [m["choice"] for m in all_sample_metrics]
         counts = dict(Counter(choices))
-        record_metrics.update({f"counts/{k}": v for k, v in counts.items()})
+        record_metrics |= {f"counts/{k}": v for k, v in counts.items()}
 
-        # record the scores
-        scores = [m["score"] for m in all_sample_metrics if m["score"] is not None]
-        if scores:
-            record_metrics[f"score"] = sum(scores) / len(scores)
-        metascores = [m["metascore"] for m in all_sample_metrics if "metascore" in m]
-        if metascores:
-            record_metrics[f"metascore"] = sum(metascores) / len(metascores)
+        if scores := [
+            m["score"] for m in all_sample_metrics if m["score"] is not None
+        ]:
+            record_metrics["score"] = sum(scores) / len(scores)
+        if metascores := [
+            m["metascore"] for m in all_sample_metrics if "metascore" in m
+        ]:
+            record_metrics["metascore"] = sum(metascores) / len(metascores)
 
         return record_metrics

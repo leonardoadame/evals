@@ -18,7 +18,33 @@ while len(chosen_words) < CHOOSE_WORDS:
     choose = random.randint(0, count - 1)
     word = all_words[next_category]["words"].pop(choose)
     # Check for no example word, and no word not containing a vowel (including accents)
-    if word != "alle" and word != "künftig" and word != "Sommelier" and any([vowel in word for vowel in ["a", "e", "i", "o", "u", "à", "è", "é", "ê", "ë", "ï", "î", "ô", "ù", "û", "ü", "ÿ"]]):
+    if (
+        word != "alle"
+        and word != "künftig"
+        and word != "Sommelier"
+        and any(
+            vowel in word
+            for vowel in [
+                "a",
+                "e",
+                "i",
+                "o",
+                "u",
+                "à",
+                "è",
+                "é",
+                "ê",
+                "ë",
+                "ï",
+                "î",
+                "ô",
+                "ù",
+                "û",
+                "ü",
+                "ÿ",
+            ]
+        )
+    ):
         chosen_words.append({
             "pos": all_words[next_category]["pos"],
             "word": word
