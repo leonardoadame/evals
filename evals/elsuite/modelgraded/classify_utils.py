@@ -44,7 +44,7 @@ def get_choice_strings(choice_strings: Union[list[str], str], n: Optional[int] =
         choice_strings = [string.ascii_uppercase[i % 26] for i in range(n)]
     # make sure each choice doesn't contain any punctuation
     for s in choice_strings:
-        assert not any(c in s for c in string.punctuation), f"{s} contains punctuation"
+        assert all(c not in s for c in string.punctuation), f"{s} contains punctuation"
     return choice_strings
 
 
@@ -173,9 +173,8 @@ def sample_and_concat_n_completions(
 
 def concat_n_completions(completions: Iterable[str], template_i: str) -> str:
     """Concatenate n completions into a single text string."""
-    completion = ""
-    for i, completion_i in enumerate(completions):
-        completion += format_necessary(
+    completion = "".join(
+        format_necessary(
             template_i,
             i=i + 1,
             i_abc=string.ascii_lowercase[i % 26],
@@ -183,4 +182,6 @@ def concat_n_completions(completions: Iterable[str], template_i: str) -> str:
             output=completion_i,
             n=len(completions),
         )
+        for i, completion_i in enumerate(completions)
+    )
     return completion.strip()

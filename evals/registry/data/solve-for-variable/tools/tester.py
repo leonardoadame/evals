@@ -23,7 +23,7 @@ class Vars:
             break
 
     def _get_vars(self, tree):
-        return set(n.id for n in ast.walk(tree) if isinstance(n, ast.Name))
+        return {n.id for n in ast.walk(tree) if isinstance(n, ast.Name)}
 
 class ValueGenerator:
     '''
@@ -167,16 +167,15 @@ class Evaluator:
 
                 check = computed == expected
 
-                if n == self.correct:
-                    if not check:
+                if not check:
+                    if n == self.correct:
                         self.msg = f'The "correct" answer {n+1} is not correct' \
-                                 + f'\n  expected {a_vars.lhs} = {expected}\n  ' \
-                                 + '\n  '.join(f'{v} = {scope[v]}' \
-                                               for v in sorted(scope) \
-                                               if len(v) == 1)
+                                     + f'\n  expected {a_vars.lhs} = {expected}\n  ' \
+                                     + '\n  '.join(f'{v} = {scope[v]}' \
+                                                   for v in sorted(scope) \
+                                                   if len(v) == 1)
                         return False
-                else:
-                    if not check:
+                    else:
                         ok[n] = False
 
         # "Incorrect" answers may evaluate correctly by chance
@@ -188,7 +187,7 @@ class Evaluator:
                 self.bad_answers.add(n)
 
                 self.msg = f'The "wrong" answer {n+1}' \
-                         + ' turns out to be correct'
+                             + ' turns out to be correct'
                 ret = False
 
         return ret

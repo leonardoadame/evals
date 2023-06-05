@@ -77,7 +77,7 @@ def main():
     tpl.load('template.jsonl')
 
     with tpl.write(outfile) as writer:
-        for count in range(n_questions):
+        for _ in range(n_questions):
             writer.add_instance(*pgen.generate())
 
     return True

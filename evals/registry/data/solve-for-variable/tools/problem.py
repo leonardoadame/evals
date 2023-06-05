@@ -18,9 +18,6 @@ class MistakesGenerator:
     '''
 
     def generate(self, location):
-        total_replies = 4   # the right answer, plus "n_variants" wrong answers
-        n_variants = total_replies - 1
-
         if len(location) < 2:
             mistakes = [[True]]
         else:
@@ -40,7 +37,9 @@ class MistakesGenerator:
             # the most common features (plus a, minus y, times 3).
 
             changes = set()
-            for n in range(n_variants):
+            n_variants = 4 - 1
+
+            for _ in range(n_variants):
                 for tries in range(n_variants):
                     n_mistakes = random.randrange(
                         len(location) >> 1,
@@ -83,7 +82,7 @@ class ProblemGenerator:
         eq, solve_for = self.egen.generate()
 
         locs = list(eq.left.var_location(solve_for))
-        assert len(locs) == 0
+        assert not locs
         locs = list(eq.right.var_location(solve_for))
         assert len(locs) == 1
 
@@ -146,13 +145,9 @@ class ProblemGenerator:
             if ev.test():
                 break
 
-            # try to fix the test by removing "bad" answers
-
-            new_answers = []
-            for n in range(len(answers)):
-                if n not in ev.bad_answers:
-                    new_answers.append(answers[n])
-
+            new_answers = [
+                answers[n] for n in range(len(answers)) if n not in ev.bad_answers
+            ]
             if len(new_answers) > 1:
                 answers = new_answers
                 break

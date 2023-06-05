@@ -55,12 +55,14 @@ def n_ctx_from_model_name(model_name: str) -> Optional[int]:
         "gpt-4-32k": 32768,
         "gpt-4-32k-0314": 32768,
     }
-    # first, look for a prefix match
-    for model_prefix, n_ctx in DICT_OF_N_CTX_BY_MODEL_NAME_PREFIX.items():
-        if model_name.startswith(model_prefix):
-            return n_ctx
-    # otherwise, look for an exact match and return None if not found
-    return DICT_OF_N_CTX_BY_MODEL_NAME.get(model_name, None)
+    return next(
+        (
+            n_ctx
+            for model_prefix, n_ctx in DICT_OF_N_CTX_BY_MODEL_NAME_PREFIX.items()
+            if model_name.startswith(model_prefix)
+        ),
+        DICT_OF_N_CTX_BY_MODEL_NAME.get(model_name, None),
+    )
 
 
 CHAT_MODELS = {
@@ -123,7 +125,7 @@ class Registry:
         return make_object(spec.cls, **(spec.args if spec.args else {}))
 
     def _dereference(self, name: str, d: dict, object: str, type: Type, **kwargs: dict) -> dict:
-        if not name in d:
+        if name not in d:
             logger.warning(
                 (
                     f"{object} '{name}' not found. "
@@ -135,9 +137,7 @@ class Registry:
         def get_alias():
             if isinstance(d[name], str):
                 return d[name]
-            if isinstance(d[name], dict) and "id" in d[name]:
-                return d[name]["id"]
-            return None
+            return d[name]["id"] if isinstance(d[name], dict) and "id" in d[name] else None
 
         logger.debug(f"Looking for {name}")
         while True:
@@ -189,14 +189,14 @@ class Registry:
                 yield self.get_eval(name)
 
     def get_base_evals(self) -> list[BaseEvalSpec]:
-        base_evals = []
-        for name, spec in self._evals.items():
-            if name.count(".") == 0:
-                base_evals.append(self.get_base_eval(name))
-        return base_evals
+        return [
+            self.get_base_eval(name)
+            for name, spec in self._evals.items()
+            if name.count(".") == 0
+        ]
 
     def get_base_eval(self, name: str) -> BaseEvalSpec:
-        if not name in self._evals:
+        if name not in self._evals:
             return None
 
         spec_or_alias = self._evals[name]

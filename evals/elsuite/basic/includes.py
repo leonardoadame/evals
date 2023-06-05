@@ -36,10 +36,8 @@ class Includes(evals.Eval):
         ), "ideal must be a list of strings"
 
         includes_answer = any(
-            [
-                utils.get_answer(sampled, ref, self.ignore_case) is not None
-                for ref in ideal
-            ]
+            utils.get_answer(sampled, ref, self.ignore_case) is not None
+            for ref in ideal
         )
         evals.record.record_match(
             includes_answer, expected=sample["ideal"], picked=sampled, sampled=sampled
