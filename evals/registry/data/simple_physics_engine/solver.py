@@ -54,7 +54,6 @@ def solve_diagram(diagram):
                 if below_shape == AIR:
                     # We always precedence descent, so we have to handle multiple drops at once.
                     tiles_to_drop = 1
-                    [i + 1, j]
                     while get_below_tile(diagram, i + tiles_to_drop, j)[0] == AIR:
                         tiles_to_drop += 1
                     i += tiles_to_drop
@@ -77,7 +76,6 @@ def solve_diagram(diagram):
                 if below_shape == AIR:
                     # We always precedence descent, so we have to handle multiple drops at once.
                     tiles_to_drop = 1
-                    [i + 1, j]
                     while get_below_tile(diagram, i + tiles_to_drop, j)[0] == AIR:
                         tiles_to_drop += 1
                     i += tiles_to_drop
