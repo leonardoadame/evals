@@ -148,8 +148,10 @@ class PromptFn:
         max_tokens: int,
         temperature: int = 0,
         n_samples: Optional[int] = None,
-        completion_kwargs: Optional[dict] = {},
+        completion_kwargs: Optional[dict] = None,
     ):
+        if completion_kwargs is None:
+            completion_kwargs = {}
         self.prompt = prompt
         self.max_tokens = max_tokens
         self.completion_fn = completion_fn

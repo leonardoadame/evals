@@ -56,9 +56,11 @@ class OpenAICompletionFn(CompletionFn):
         api_base: Optional[str] = None,
         api_key: Optional[str] = None,
         n_ctx: Optional[int] = None,
-        extra_options: Optional[dict] = {},
+        extra_options: Optional[dict] = None,
         **kwargs,
     ):
+        if extra_options is None:
+            extra_options = {}
         self.model = model
         self.api_base = api_base
         self.api_key = api_key
@@ -103,9 +105,11 @@ class OpenAIChatCompletionFn(CompletionFnSpec):
         api_base: Optional[str] = None,
         api_key: Optional[str] = None,
         n_ctx: Optional[int] = None,
-        extra_options: Optional[dict] = {},
+        extra_options: Optional[dict] = None,
         **kwargs,
     ):
+        if extra_options is None:
+            extra_options = {}
         self.model = model
         self.api_base = api_base
         self.api_key = api_key

@@ -76,7 +76,9 @@ CHAT_MODELS = {
 
 
 class Registry:
-    def __init__(self, registry_paths: Sequence[Union[str, Path]] = DEFAULT_PATHS):
+    def __init__(self, registry_paths: Sequence[Union[str, Path]] = None):
+        if registry_paths is None:
+            registry_paths = DEFAULT_PATHS
         self._registry_paths = [Path(p) if isinstance(p, str) else p for p in registry_paths]
 
     def add_registry_paths(self, paths: list[Union[str, Path]]):
