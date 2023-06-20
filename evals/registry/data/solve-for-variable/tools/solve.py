@@ -199,7 +199,7 @@ class Expression:
         return Expression(self.prio, self.op,
                           *[arg.clone() for arg in self.args])
 
-    def var_location(self, name, past=[]):
+    def var_location(self, name, past=None):
         '''
         Enumerate the locations of a variable in the expression tree.
         A location is a sequence of 0s and 1s, indicate over which
@@ -207,6 +207,8 @@ class Expression:
         For example, in (a + (b * c)), variable b has location [1, 0]
         (descent on args[1] on the + node, then take args[0]).
         '''
+        if past is None:
+            past = []
         for n in range(len(self.args)):
             arg = self.args[n]
 

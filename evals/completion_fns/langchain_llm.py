@@ -17,7 +17,9 @@ class LangChainLLMCompletionResult(CompletionResult):
 
 
 class LangChainLLMCompletionFn(CompletionFn):
-    def __init__(self, llm: str, llm_kwargs: Optional[dict] = {}, **kwargs) -> None:
+    def __init__(self, llm: str, llm_kwargs: Optional[dict] = None, **kwargs) -> None:
+        if llm_kwargs is None:
+            llm_kwargs = {}
         # Import and resolve self.llm to an instance of llm argument here, assuming it's always a subclass of BaseLLM
         module = importlib.import_module("langchain.llms")
         LLMClass = getattr(module, llm)
